@@ -1,0 +1,358 @@
+openapi: 3.0.0
+info:
+  title: User Management API
+  description: API for user management
+  version: 1.0.0
+servers:
+- url: https://virtserver.swaggerhub.com/JCASCOSE/UserManagement/1.0.0
+  description: SwaggerHub API Auto Mocking
+- url: https://virtserver.swaggerhub.com/JCASCOSE/ISTIC/1.0.0
+  description: SwaggerHub API Auto Mocking
+paths:
+  /api/user-management/user/login:
+    post:
+      tags:
+      - user
+      summary: User identification
+      operationId: user-login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/user_login_body'
+        required: true
+      responses:
+        "200":
+          description: User identification was successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSession'
+        "401":
+          description: Authentication error
+      x-swagger-router-controller: User
+  /api/user-management/user:
+    post:
+      tags:
+      - user
+      summary: Register account
+      operationId: user-register
+      requestBody:
+        description: Create a new user
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        "201":
+          description: Account successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        "400":
+          description: Error in registration data
+      x-swagger-router-controller: User
+  /api/user-management/user/logout:
+    post:
+      tags:
+      - user
+      summary: Logout
+      operationId: user-logout
+      responses:
+        "204":
+          description: Session closed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponse'
+        "401":
+          description: Unauthorized - user not logged in
+        "500":
+          description: Internal server error
+      x-swagger-router-controller: User
+  /api/user-management/user/{userId}:
+    get:
+      tags:
+      - user
+      summary: Search user
+      operationId: user-get
+      parameters:
+      - name: userId
+        in: path
+        description: User id to search
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: 1
+      responses:
+        "204":
+          description: account retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        "401":
+          description: Unauthorized - user not logged in
+        "404":
+          description: Account not found
+      x-swagger-router-controller: User
+    put:
+      tags:
+      - user
+      summary: Edit user
+      operationId: user-update
+      parameters:
+      - name: userId
+        in: path
+        description: user that needs to be updated
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: 1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/user_userId_body'
+      responses:
+        "200":
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        "401":
+          description: Unauthorized - user not logged in
+        "404":
+          description: User not found
+      x-swagger-router-controller: User
+    delete:
+      tags:
+      - user
+      summary: Account deletion
+      operationId: user-delete
+      parameters:
+      - name: userId
+        in: path
+        description: User id to delete
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: 1
+      responses:
+        "204":
+          description: account deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponse'
+        "401":
+          description: Unauthorized - user not logged in
+        "404":
+          description: Account not found
+      x-swagger-router-controller: User
+  /api/user-management/{username}/forgot-password:
+    post:
+      tags:
+      - user
+      summary: Forgot password
+      operationId: user-forgot-password
+      parameters:
+      - name: username
+        in: path
+        description: user that forgot their password
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: fred
+      responses:
+        "200":
+          description: Mail sent to recovery mail address
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIResponse'
+        "404":
+          description: User not found
+      x-swagger-router-controller: User
+  /api/user-management/{userId}/subscription:
+    get:
+      tags:
+      - subscription
+      summary: Get subscription of user
+      operationId: user-get-subscription
+      parameters:
+      - name: userId
+        in: path
+        description: user that needs to update their subsciption
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: 1
+      responses:
+        "200":
+          description: Subscription successfully obtained
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+        "400":
+          description: Error in subscription request
+        "401":
+          description: Unauthorized - user not logged in
+      x-swagger-router-controller: Subscription
+    put:
+      tags:
+      - subscription
+      summary: Choose subscription
+      operationId: user-edit-subscription
+      parameters:
+      - name: userId
+        in: path
+        description: user that needs to update their subsciption
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: 1
+      - name: subscription
+        in: query
+        description: type of subscription that is going to be selected
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: integer
+        example: 2
+      responses:
+        "200":
+          description: Subscription updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+        "400":
+          description: Error in subscription request
+        "401":
+          description: Unauthorized - user not logged in
+      x-swagger-router-controller: Subscription
+components:
+  schemas:
+    User:
+      required:
+      - email
+      - password
+      - userId
+      - username
+      type: object
+      properties:
+        userId:
+          type: string
+          example: "1"
+        username:
+          type: string
+          example: frederick62
+        email:
+          type: string
+          format: email
+          example: fred@email.com
+        recoveryEmail:
+          type: string
+          format: email
+          example: rick@email.com
+        password:
+          type: string
+          format: password
+          example: "1234"
+      example:
+        password: "1234"
+        userId: "1"
+        recoveryEmail: rick@email.com
+        email: fred@email.com
+        username: frederick62
+    UserSession:
+      required:
+      - userId
+      - username
+      type: object
+      properties:
+        userId:
+          type: string
+          example: "1"
+        username:
+          type: string
+          example: frederick62
+      example:
+        userId: "1"
+        username: frederick62
+    Subscription:
+      required:
+      - subscriptionId
+      - subscriptionType
+      type: object
+      properties:
+        subscriptionId:
+          type: string
+          example: "1"
+        subscriptionType:
+          type: integer
+          example: 2
+      example:
+        subscriptionType: 2
+        subscriptionId: "1"
+    APIResponse:
+      required:
+      - message
+      type: object
+      properties:
+        message:
+          type: string
+          example: Operation returned successfully
+      example:
+        message: Operation returned successfully
+    user_login_body:
+      required:
+      - password
+      - username
+      type: object
+      properties:
+        username:
+          type: string
+          example: newuser
+        password:
+          type: string
+          example: "6789"
+    user_userId_body:
+      type: object
+      properties:
+        username:
+          type: string
+          description: The username to change
+          example: newusername
+        email:
+          type: string
+          description: The email to change
+          format: email
+          example: freshemail@email.com
+        recoveryemail:
+          type: string
+          description: The recovery email to change
+          format: email
+          example: recoverymail@email.es
+        password:
+          type: string
+          description: The password to change
+          example: password1234

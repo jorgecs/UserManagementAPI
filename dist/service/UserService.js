@@ -10,7 +10,7 @@ exports.userDelete = function (userId) {
   return new Promise(function (resolve, reject) {
     var examples = {};
     examples['application/json'] = {
-      "message": "Account deleted successfully"
+      "message": "Account deleted successfully!"
     };
     if (Object.keys(examples).length > 0) {
       resolve(examples[Object.keys(examples)[0]]);

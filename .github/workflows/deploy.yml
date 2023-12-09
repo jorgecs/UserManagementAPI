@@ -1,24 +1,29 @@
-name: CI
-on: push
+name: Deploy to Railway
+
+on:
+  push:
+    branches: [main]
 
 jobs:
-
   deploy:
-    name: Docker container with Ngrok tunnel
     runs-on: ubuntu-latest
-    needs: cancel
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-    
-    - name: Run container
-      run: docker-compose up -d 
-    
-    - uses: luisboto/ngrok-tunnel-action@<VERSION>
-      with:
-        timeout: 1h
-        port: 8080
-        ngrok_authtoken: ${{ secrets.NGROK_AUTHTOKEN }}
-        tunnel_type: http
-        save_url_to_filename: tunnelURL.md
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Use Node 16
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16.x
+
+      - name: Install packages
+        run: npm ci
+
+      - name: Install Railway
+        run: npm i -g @railway/cli
+
+      - name: Deploy
+        run: railway up --service usermanagement
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}

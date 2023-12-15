@@ -14,7 +14,7 @@ paths:
       operationId: metricsGET
       responses:
         "200":
-          description: User identification was successful
+          description: Metrics path
       x-swagger-router-controller: Default
   /api/user-management/user/login:
     post:
